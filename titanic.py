@@ -1,4 +1,5 @@
 import os
+import argparse
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import OneHotEncoder
@@ -10,10 +11,20 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
+import import_yaml_config
 
 
-os.chdir("//home/onyxia/work/titanic")
-TrainingData = pd.read_csv("data.csv")
+config = import_yaml_config.import_yaml_config()
+API_TOKEN = config.get("jeton_api")
+TRAIN_PATH = config.get("train_path", "train.csv")
+TEST_PATH = config.get("test_path", "test.csv")
+TEST_FRACTION = config.get("test_fraction", 0.1)
+DATA_PATH = config.get("data_path", 0.1)
+TITANIC_PATH = config.get("titanic_path")
+
+
+os.chdir(TITANIC_PATH)
+TrainingData = pd.read_csv(DATA_PATH)
 
 TrainingData.head()
 
@@ -22,7 +33,12 @@ TrainingData["Ticket"].str.split("/").str.len()
 
 TrainingData["Name"].str.split(",").str.len()
 
-N_TREES = 20
+parser = argparse.ArgumentParser(description="Le nombre d'arbre")
+parser.add_argument(
+    "--n_trees", type=int, default=20, help="Un entier strictement positif à entrer"
+)
+args = parser.parse_args()
+print(" le nombre d'arbre utilisé est :", args.n_trees)
 MAX_DEPTH = None
 MAX_FEATURES = "sqrt"
 
@@ -81,7 +97,7 @@ preprocessor = ColumnTransformer(
 pipe = Pipeline(
     [
         ("preprocessor", preprocessor),
-        ("classifier", RandomForestClassifier(n_estimators=20)),
+        ("classifier", RandomForestClassifier(n_estimators=args.n_trees)),
     ]
 )
 
@@ -95,8 +111,6 @@ X = TrainingData.drop("Survived", axis="columns")
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.1)
 pd.concat([X_train, y_train]).to_csv("train.csv")
 pd.concat([X_test, y_test]).to_csv("test.csv")
-
-JETONAPI = "$trotskitueleski1917"
 
 
 # Ici demandons d'avoir 20 arbres

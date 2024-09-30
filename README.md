@@ -1,0 +1,2 @@
+L'utilisation de notre API nécessite la création d'un fichier de configuration d'extension YAML appélé ici config .yaml.
+Qui contient les chemins d'accés aux données , un jeton d'accées de l'API , et un réel compris dans 0 et 1 définissant la part relative des données d'entrainement dans l'ensemble des données bruts.
